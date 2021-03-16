@@ -3,8 +3,16 @@ const { getMetricsList } = require("./metrics-list")
 // As returned by jest JSON output
 const testStats = {
     numTotalTestSuites: 1,
-    numTotalTests: 2,
-    snapshot: { total: 3 },
+    numPassedTestSuites: 2,
+    numFailedTestSuites: 3,
+    numPendingTestSuites: 4,
+    numTotalTests: 5,
+    numPassedTests: 6,
+    numPendingTests: 7,
+    numFailedTests: 8,
+    endTime: Date.now(),
+    startTime: Date.now() - 5000,
+    snapshot: { total: 9 },
 }
 // As returned by `json-summary` coverage reporter
 const coverageStats = {

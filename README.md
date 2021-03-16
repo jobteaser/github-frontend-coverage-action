@@ -1,4 +1,4 @@
-# github-frontend-coverage-action
+# github-frontend-coverage-action ![example workflow](https://github.com/jobteaser/github-frontend-coverage-action/actions/workflows/ci.yml/badge.svg)
 
 This Github action allows to compute test coverage (as reported by Jest) and to monitor it by sending coverage metrics to Pushgateway of Prometheus. What you do with those metrics is up to you but you may choose to display them in a Grafana dashboard for example.
 
