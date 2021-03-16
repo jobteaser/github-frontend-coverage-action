@@ -1,0 +1,36 @@
+name: 'Frontend coverage'
+description: 'Compute and publish jest coverage for list of folders'
+inputs:
+  task:
+    description: 'Which step to run (compute, monitor)'
+    required: true
+    default: 'compute'
+  folder-list:
+    description: 'List of targetted folders'
+    required: true
+    default: ''
+  metric-job-name:
+    description: 'Job name of prometheus metrics'
+    required: true
+    default: ''
+  push-gateway-uri:
+    description: 'URI of the Prometheus PushGateway'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        if [[ "${{ inputs.task }}" == "compute" ]]; then
+          $GITHUB_ACTION_PATH/src/compute/coverage-all-folders.sh "${{ inputs.folder-list }}"
+        else
+          exit 0
+        fi
+      shell: bash
+    - run: |
+        if [[ "${{ inputs.task }}" == "monitor" ]]; then
+          $GITHUB_ACTION_PATH/src/monitor/push-metrics-all-folders.sh ${{ inputs.metric-job-name }} ${{ inputs.push-gateway-uri }}
+        else
+          exit 0
+        fi
+      shell: bash

@@ -1,0 +1,23 @@
+{
+  "name": "github-frontend-coverage-action",
+  "version": "1.0.0",
+  "description": "Github action for compute and monitor of test coverage via jest",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jobteaser/github-frontend-coverage-action.git"
+  },
+  "author": "francois.bonnefont@jobteaser.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jobteaser/github-frontend-coverage-action/issues"
+  },
+  "homepage": "https://github.com/jobteaser/github-frontend-coverage-action#readme",
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "nock": "^13.0.10"
+  }
+}
