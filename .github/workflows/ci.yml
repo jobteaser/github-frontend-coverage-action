@@ -1,0 +1,14 @@
+name: "CI"
+on: push
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-20.04
+    container: node:10.13-stretch
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+      - name: "Install NPM dependencies"
+        run: npm ci
+      - name: "Run Jest"
+        run: npm test
