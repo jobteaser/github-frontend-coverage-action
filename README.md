@@ -23,7 +23,7 @@ To choose which step to run, pass a parameter `task` with one of those values:
 - uses: jobteaser/github-frontend-coverage-action
   with:
     task: "compute"
-    folder-list: "./src/feature1 ./src/feature2"
+    folders-config: ./folders-config.json
 
 # Monitor coverage
 - uses: jobteaser/github-frontend-coverage-action
@@ -33,7 +33,22 @@ To choose which step to run, pass a parameter `task` with one of those values:
     push-gateway-uri: "${{ secrets.PUSH_GATEWAY_URI }}"
 ```
 
-This would then send metrics to Pushgateway of Prometheus to paths:
+With a `folders-config.json` like this one...
+```json
+// folders-config.json
+[
+  {
+    "id": "feature1",
+    "folders": ["src/feature1/foo", "src/feature1/bar"]
+  },
+  {
+    "id": "feature2",
+    "folders": ["src/feature2/baz", "src/feature2/biz"]
+  }
+]
+```
+
+... it would then send metrics to Pushgateway of Prometheus to paths:
 - `/metrics/job/myproject_coverage/folder_name/feature1`
 - `/metrics/job/myproject_coverage/folder_name/feature2`
 
@@ -42,12 +57,26 @@ This means that you could then **follow coverage metrics independently** for cod
 ### `compute` step
 
 The `compute` step expects only one parameter:
-- `folder-list`: a **string** made of **space separated list of folders** against which to run the coverage computing
+- `folders-config`: a JSON **config** file path. It describes **the list of folders** against which to run the coverage computing. **Folders are grouped** so that you can compute coverage metrics for more that one folder:
 
-This step will iterate over the provided folder list and call the coverage script once per folder. This will be done thanks to the NPM script `test:ci:coverage` that you must provide (see [prerequisites](#prerequisites)).
+```json
+// folders-config.json
+[
+  {
+    "id": "feature1",
+    "folders": ["src/feature1/foo", "src/feature1/bar"]
+  },
+  {
+    "id": "feature2",
+    "folders": ["src/feature2/baz", "src/feature2/biz"]
+  }
+]
+```
+
+This step will iterate over the provided folder list and call the coverage script **once per folder group**. This will be done thanks to the NPM script `test:ci:coverage` that you must provide (see [prerequisites](#prerequisites)).
 
 ```shell
-npm run test:ci:coverage -- ./src/feature1
+npm run test:ci:coverage -- ./src/feature1/foo ./src/feature1/bar
 ```
 
 This step produces an archive called `coverage-artifacts.tar.gz` containing all the computed metrics for all folders (in JSON files).
@@ -161,18 +190,16 @@ jobs:
       - name: "Install NPM dependencies"
         run: npm ci
       # Compute list of folders targetted by coverage computing
-      - name: "Build list of folders against which to compute coverage"
+      - name: "Build a JSON config of folders against which to compute coverage"
         id: step_folder_list
-        run: |
-          FOLDER_LIST="./src/features/* ./src/another_folder"
-          echo "::set-output name=list::$FOLDER_LIST"
+        run: echo "[{\"id\":\"feature1\",\"folders\":[\"src/feature1/foo\",\"src/feature1/bar\"]}]" > folders-config.json
 
       # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
       # Our coverage action: step "compute"
       - uses: jobteaser/github-frontend-coverage-action
         with:
           task: "compute"
-          folder-list: ${{ steps.step_folder_list.outputs.list }}
+          folders-config: ./folders-config.json
       # ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
       # This upload step allows to share coverage metrics between our 2 jobs

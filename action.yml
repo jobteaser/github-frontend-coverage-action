@@ -5,8 +5,8 @@ inputs:
     description: 'Which step to run (compute, monitor)'
     required: true
     default: 'compute'
-  folder-list:
-    description: 'List of targetted folders'
+  folders-config:
+    description: 'JSON config describing the targetted folders'
     required: true
     default: ''
   metric-job-name:
@@ -22,7 +22,7 @@ runs:
   steps:
     - run: |
         if [[ "${{ inputs.task }}" == "compute" ]]; then
-          $GITHUB_ACTION_PATH/src/compute/coverage-all-folders.sh "${{ inputs.folder-list }}"
+          $GITHUB_ACTION_PATH/src/compute/coverage-all-folders.js ${{ inputs.folders-config }}
         else
           exit 0
         fi
