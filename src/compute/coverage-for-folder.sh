@@ -1,27 +1,50 @@
 #!/usr/bin/env bash
 
-# This script computes the test coverage for all folders
+# This script computes the test coverage for a list of folders
 
 echo
 
-folderList=$1
-echo "Folders list:" $folderList
-if [ "$folderList" = "" ]; then
-    echo "ERROR: Please provide the list of folders against which to run the coverage computation."
-    echo "Ex: $0 ./folder1 ./folder2/subfolder ./src"
+fatal() {
+    printf "$*\n" >/dev/stderr
     exit 1
+}
+
+usage() {
+    cat <<EOF
+usage: $0 OPTIONS
+OPTIONS
+-h display help
+-i identifier for folders list - mandatory
+-f folders list (space separated string) - mandatory
+
+Ex: $0 -i my_app -f "./folder1 ./folder2/subfolder ./src"
+EOF
+}
+
+OPTIND=1
+while getopts 'hi:f:' arg; do
+    case "$arg" in
+	h) usage; exit 0 ;;
+	i) identifier="$OPTARG" ;;
+	f) folders="$OPTARG" ;;
+	?) fatal "option error" ;;
+    esac
+done
+shift "$((OPTIND - 1))"
+
+if [ -z "$identifier" ] || [ -z "$folders" ]; then
+    fatal "ERROR: Missing options.\n\n$(usage)"
 fi
 
 allowList=".*" # Debug for a sub-list of folders with: "folder1|folder2"
 # allowList="folder1|folder2"
 
 function computeCoverage {
-    folderPath=$1
 
-    echo "Computing coverage for folder: $folderPath"
+    echo "Computing coverage for folders: ${folders}"
 
     if [[ "$folderPath" =~ $allowList ]]; then
-        npm run test:ci:coverage -- $folderPath --json --outputFile=jest-output.json
+        npm run test:ci:coverage -- --json --outputFile=jest-output.json ${folders}
 
         # Add endTime of tests to monitor duration
         testEndTime=$(node -e 'console.log(Date.now())')
@@ -43,9 +66,8 @@ function computeCoverage {
         fi
 
         # Make sure that each folder coverage run are saved in unique folders/files
-        folderName="${folderPath##*/}"
-        mv coverage/coverage-summary.json coverage-artifacts/coverageStats_${folderName}.json
-        mv jest-output.json coverage-artifacts/testStats_${folderName}.json
+        mv coverage/coverage-summary.json coverage-artifacts/coverageStats_${identifier}.json
+        mv jest-output.json coverage-artifacts/testStats_${identifier}.json
 
         # Clear stats
         rm -rf coverage jest-output.json
@@ -56,14 +78,6 @@ function computeCoverage {
     echo
 }
 
+computeCoverage ${folders}
+
 echo
-
-mkdir coverage-artifacts/
-
-# Compute coverage for all folders
-for folderPath in $folderList; do
-    computeCoverage $folderPath
-done
-
-# Tar all coverage stats
-tar cvzf coverage-artifacts.tar.gz coverage-artifacts
