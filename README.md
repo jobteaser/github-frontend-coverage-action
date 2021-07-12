@@ -5,7 +5,7 @@ This Github action allows to compute test coverage (as reported by Jest) and to 
 ## Prerequisites
 
 For this github action to work, **you must provide**:
-- a **dedicated NPM script called `test:ci:coverage`**. This script when called (by the `compute` step - see below) must run jest with the right jest config. This script must also accept a dynamic path to restrict the run of tests and coverage to a specific folder (ex: `npm run test:ci:coverage -- ./src/feature1`). The script will also be passed other options (`--json`, `--outputFile=jest-output.json`) to retrieve jest test stats. **You are expected to transfer any options passed to `test:ci:coverage`, to Jest CLI**.
+- a **dedicated NPM script called `test:ci:coverage`**. This script when called (by the `compute` step - see below) must run jest with the right jest config. This script must also accept dynamic paths to restrict the run of tests and coverage to a specific list of folders (ex: `npm run test:ci:coverage -- "./src/feature1/foo ./src/feature1/bar"`). The script will also be passed other options (`--json`, `--outputFile=jest-output.json`) to retrieve jest test stats. **You are expected to transfer any options passed to `test:ci:coverage`, to Jest CLI**. It is MANDATORY that the targetted **list of folders is passed as the FIRST argument of `test:ci:coverage` script**.
 - the **coverage reporter `json-summary`** to the list of `coverageReporters` in your jest config (ex: `coverageReporters: ["text", "html", "json-summary"],`)
 - a `coverageDirectory` option to jest config, with the value `<rootDir>/coverage`
 
@@ -76,7 +76,7 @@ The `compute` step expects only one parameter:
 This step will iterate over the provided folder list and call the coverage script **once per folder group**. This will be done thanks to the NPM script `test:ci:coverage` that you must provide (see [prerequisites](#prerequisites)).
 
 ```shell
-npm run test:ci:coverage -- ./src/feature1/foo ./src/feature1/bar
+npm run test:ci:coverage -- "./src/feature1/foo ./src/feature1/bar"
 ```
 
 This step produces an archive called `coverage-artifacts.tar.gz` containing all the computed metrics for all folders (in JSON files).
