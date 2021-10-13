@@ -4,7 +4,9 @@ on: push
 jobs:
   run_tests:
     runs-on: ubuntu-20.04
-    container: node:10.13-stretch
+    container:
+      image: jobteaser/node:2.0.0
+      options: --user 1001
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
