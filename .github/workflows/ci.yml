@@ -6,11 +6,14 @@ jobs:
     runs-on: ubuntu-20.04
     container:
       image: jobteaser/node:2.0.0
-      options: --user 1001
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
+        with:
+          path: workspace
       - name: "Install NPM dependencies"
+        working-directory: workspace
         run: npm ci
       - name: "Run Jest"
+        working-directory: workspace
         run: npm test
