@@ -1,6 +1,10 @@
 name: 'Frontend coverage'
 description: 'Compute and publish jest coverage for list of folders'
 inputs:
+  working-directory:
+    description: 'The path to the code that was checkout-ed, relative to $GITHUB_WORKSPACE'
+    required: false
+    default: '.'
   task:
     description: 'Which step to run (compute, monitor)'
     required: true
@@ -22,6 +26,7 @@ runs:
   steps:
     - run: |
         if [[ "${{ inputs.task }}" == "compute" ]]; then
+          cd ${{ inputs.working-directory }}
           $GITHUB_ACTION_PATH/src/compute/coverage-all-folders.js ${{ inputs.folders-config }}
         else
           exit 0
