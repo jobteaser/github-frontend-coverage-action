@@ -44,3 +44,5 @@ echo "Coverage files:" $coverageFiles
 for coverageFile in $coverageFiles; do
     pushMetrics $coverageFile
 done
+
+echo "ALL DONE."

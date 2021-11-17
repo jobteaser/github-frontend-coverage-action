@@ -49,6 +49,7 @@ const pushMetricsForFolder = ({ coverageArtifactsPath, folderName, jobName, push
     catch(e) {
         throw new Error(`ERROR: ${e.message}`)
     }
+    console.log("exit pushMetricsForFolder")
 }
 
 // If script is used from command-line as standalone
