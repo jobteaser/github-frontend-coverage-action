@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # This script push computed metrics to Prometheus.
 
 # It expects coverage metrics to be exposed in a tar.gz file called

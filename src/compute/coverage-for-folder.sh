@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # This script computes the test coverage for a list of folders
 
 echo

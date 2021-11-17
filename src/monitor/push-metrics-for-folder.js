@@ -37,18 +37,13 @@ const pushMetricsForFolder = ({ coverageArtifactsPath, folderName, jobName, push
         .reduce((metricsAsText, metric) => metricsAsText + formatMetricPayload(metric), "")
 
     // Sent metrics to Prometheus
-    try {
-        pushToGateway(`${pushGatewayUri}/metrics/job/${jobName}/folder_name/${folderName}`, metricsPayload, (err, data) => {
-            if (err) {
-                throw new Error(err.message)
-            }
+    pushToGateway(`${pushGatewayUri}/metrics/job/${jobName}/folder_name/${folderName}`, metricsPayload, (err, data) => {
+        if (err) {
+            throw new Error(err.message)
+        }
 
-            console.log("Done -", data.body)
-        })
-    }
-    catch(e) {
-        throw new Error(`ERROR: ${e.message}`)
-    }
+        console.log("Done -", data.body)
+    })
 }
 
 // If script is used from command-line as standalone
