@@ -45,4 +45,5 @@ for coverageFile in $coverageFiles; do
     pushMetrics $coverageFile
 done
 
-echo "ALL DONE."
+echo "ALL DONE - exit 1."
+exit 1
