@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # This script push computed metrics to Prometheus.
 
 # It expects coverage metrics to be exposed in a tar.gz file called
@@ -35,7 +37,10 @@ function pushMetrics() {
     srcFolderName="${fileWithExtension%%.*}"
     echo "Push metrics for folder: ${srcFolderName}"
     $(dirname $0)/push-metrics-for-folder.js "$coverageArtifactsPath" "$srcFolderName" "$metricsJobName" "$pushGatewayUri"
+    retCode=$?
+    echo $retCode "retCode"
     echo
+    return $retCode
 }
 
 # Push all collected metrics
@@ -43,6 +48,13 @@ coverageFiles="./coverage-artifacts/coverageStats_*"
 echo "Coverage files:" $coverageFiles
 for coverageFile in $coverageFiles; do
     pushMetrics $coverageFile
+    retPushMetrics=$?
+    if [ "$retPushMetrics" != "0" ]; then
+        echo "Should exit 1"
+    fi
+    echo $retPushMetrics "POST pushMetrics"
 done
 
-echo "ALL DONE."
+echo $? "POST FOR LOOP"
+
+echo "ALL DONE -"
