@@ -28,6 +28,7 @@ runs:
         if [[ "${{ inputs.task }}" == "compute" ]]; then
           cd ${{ inputs.working-directory }}
           $GITHUB_ACTION_PATH/src/compute/coverage-all-folders.js ${{ inputs.folders-config }}
+          # $GITHUB_ACTION_PATH/src/compute/coverage-all-folders.js ${{ inputs.folders-config }} | exit $?
         else
           exit 0
         fi
@@ -35,7 +36,10 @@ runs:
     - run: |
         if [[ "${{ inputs.task }}" == "monitor" ]]; then
           $GITHUB_ACTION_PATH/src/monitor/push-metrics-all-folders.sh ${{ inputs.metric-job-name }} ${{ inputs.push-gateway-uri }}
+          # $GITHUB_ACTION_PATH/src/monitor/push-metrics-all-folders.sh ${{ inputs.metric-job-name }} ${{ inputs.push-gateway-uri }} | exit $?
+          echo $? "Out of script"
         else
           exit 0
         fi
+        echo $? "Out of if"
       shell: bash
