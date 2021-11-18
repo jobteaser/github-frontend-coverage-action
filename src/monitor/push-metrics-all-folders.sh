@@ -35,6 +35,7 @@ function pushMetrics() {
     srcFolderName="${fileWithExtension%%.*}"
     echo "Push metrics for folder: ${srcFolderName}"
     $(dirname $0)/push-metrics-for-folder.js "$coverageArtifactsPath" "$srcFolderName" "$metricsJobName" "$pushGatewayUri"
+    echo $? "POST push-metrics-for-folder.js"
     echo
 }
 
@@ -43,6 +44,8 @@ coverageFiles="./coverage-artifacts/coverageStats_*"
 echo "Coverage files:" $coverageFiles
 for coverageFile in $coverageFiles; do
     pushMetrics $coverageFile
+    echo $? "POST pushMetrics"
 done
 
-echo "ALL DONE."
+echo "ALL DONE - exit 1."
+exit 1
