@@ -44,7 +44,7 @@ function computeCoverage {
     echo "Computing coverage for folders: ${folders}"
 
     if [[ "$folders" =~ $allowList ]]; then
-        npm run test:ci:coverage -- "${folders}" --json --outputFile=jest-output.json
+        npm run test:ci:coveragess -- "${folders}" --json --outputFile=jest-output.json
 
         # Add endTime of tests to monitor duration
         testEndTime=$(node -e 'console.log(Date.now())')
