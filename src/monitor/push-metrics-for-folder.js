@@ -44,6 +44,7 @@ const pushMetricsForFolder = ({ coverageArtifactsPath, folderName, jobName, push
             }
 
             console.log("Done -", data.body)
+            throw new Error("FOOBAR")
         })
     }
     catch(e) {
