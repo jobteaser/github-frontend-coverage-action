@@ -25,6 +25,11 @@ const pushToGateway = (pushGatewayUri, metricsPayload, callback) => {
         res.setEncoding('utf8')
         res.on('data', chunk => body += chunk)
         res.on('end', () => {
+            if (res.statusCode > 204) {
+                callback(new Error(`Invalid response status code '${res.statusCode}' - response: ${body}`))
+                return
+            }
+
             callback(null, {
                 res,
                 body,
