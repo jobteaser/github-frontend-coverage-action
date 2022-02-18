@@ -11,6 +11,7 @@
 
 const path = require("path")
 
+const { MAX_ATTEMPTS, RETRY_DELAY } = require('./constants')
 const { getMetricsList } = require('./metrics-list.js')
 const { formatMetricPayload } = require('./format-metric-payload.js')
 const { pushToGateway } = require('./push-to-pushgateway.js')
@@ -36,17 +37,15 @@ const pushMetricsForFolder = ({ coverageArtifactsPath, folderName, jobName, push
     const metricsPayload = getMetricsList(testStats, coverageStats)
         .reduce((metricsAsText, metric) => metricsAsText + formatMetricPayload(metric), "")
 
-    // Sent metrics to Prometheus - try 5 times
-    const maxAttempts = 5
-    const retryDelay = 3000 // ms
+    // Sent metrics to Prometheus - try MAX_ATTEMPTS times
     const pushAttempt = (attemptsCount) => {
         console.log(`Push metrics attempt #${attemptsCount}...`)
         pushToGateway(`${pushGatewayUri}/metrics/job/${jobName}/folder_name/${folderName}`, metricsPayload, (err, data) => {
             if (err) {
-                if (attemptsCount < maxAttempts) {
-                    console.error("Failed to push metrics:", err.message, ` - will retry in ${retryDelay}ms...`)
+                if (attemptsCount < MAX_ATTEMPTS) {
+                    console.error("Failed to push metrics:", err.message, ` - will retry in ${RETRY_DELAY}ms...`)
                     // Wait and retry
-                    setTimeout(() => pushAttempt(attemptsCount + 1), retryDelay)
+                    setTimeout(() => pushAttempt(attemptsCount + 1), RETRY_DELAY)
                 }
                 else {
                     throw err

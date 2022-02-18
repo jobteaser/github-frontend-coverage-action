@@ -1,5 +1,6 @@
 const path = require("path")
 const fs = require("fs")
+const { MAX_ATTEMPTS } = require('./constants')
 const { pushToGateway } = require('./push-to-pushgateway.js')
 const { pushMetricsForFolder } = require("./push-metrics-for-folder")
 
@@ -53,7 +54,7 @@ describe("pushMetricsForFolder", () => {
         expect(lastMockCallArgs[1]).toEqual("{\"foo\":\"bar\"}")
     })
 
-    it("should attempt 5 times to push metrics before failing", () => {
+    it(`should attempt ${MAX_ATTEMPTS} times to push metrics before failing`, () => {
         jest.useFakeTimers()
 
         let attemptsCount = 0
@@ -72,6 +73,6 @@ describe("pushMetricsForFolder", () => {
                 pushGatewayUri: "http://pushgateway",
             })
         }).toThrow(/Test error/)
-        expect(attemptsCount).toEqual(5)
+        expect(attemptsCount).toEqual(MAX_ATTEMPTS)
     })
 })
