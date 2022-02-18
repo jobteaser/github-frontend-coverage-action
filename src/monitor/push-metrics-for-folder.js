@@ -36,14 +36,29 @@ const pushMetricsForFolder = ({ coverageArtifactsPath, folderName, jobName, push
     const metricsPayload = getMetricsList(testStats, coverageStats)
         .reduce((metricsAsText, metric) => metricsAsText + formatMetricPayload(metric), "")
 
-    // Sent metrics to Prometheus
-    pushToGateway(`${pushGatewayUri}/metrics/job/${jobName}/folder_name/${folderName}`, metricsPayload, (err, data) => {
-        if (err) {
-            throw new Error(err.message)
-        }
+    // Sent metrics to Prometheus - try 5 times
+    const maxAttempts = 5
+    const retryDelay = 3000 // ms
+    const pushAttempt = (attemptsCount) => {
+        console.log(`Push metrics attempt #${attemptsCount}...`)
+        pushToGateway(`${pushGatewayUri}/metrics/job/${jobName}/folder_name/${folderName}`, metricsPayload, (err, data) => {
+            if (err) {
+                if (attemptsCount < maxAttempts) {
+                    console.error("Failed to push metrics:", err.message, ` - will retry in ${retryDelay}ms...`)
+                    // Wait and retry
+                    setTimeout(() => pushAttempt(attemptsCount + 1), retryDelay)
+                }
+                else {
+                    throw err
+                }
+            }
+            else {
+                console.log("Done -", data.body)
+            }
+        })
+    }
 
-        console.log("Done -", data.body)
-    })
+    pushAttempt(0)
 }
 
 // If script is used from command-line as standalone

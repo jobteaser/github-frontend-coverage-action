@@ -4,7 +4,7 @@
   "description": "Github action for compute and monitor of test coverage via jest",
   "main": "index.js",
   "scripts": {
-    "test": "jest src/"
+    "test": "jest src/ --config ./config/jest.config.json"
   },
   "repository": {
     "type": "git",

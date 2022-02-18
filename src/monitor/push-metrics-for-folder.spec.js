@@ -52,4 +52,26 @@ describe("pushMetricsForFolder", () => {
         expect(lastMockCallArgs[0]).toEqual(`http://pushgateway/metrics/job/test-jobname/folder_name/${FOLDERNAME}`)
         expect(lastMockCallArgs[1]).toEqual("{\"foo\":\"bar\"}")
     })
+
+    it("should attempt 5 times to push metrics before failing", () => {
+        jest.useFakeTimers()
+
+        let attemptsCount = 0
+        const pushToGatewayMock = jest.fn((url, payload, callback) => {
+            callback(new Error("Test error."))
+            attemptsCount++
+            jest.runAllTimers()
+        })
+        pushToGateway.mockImplementation(pushToGatewayMock)
+
+        expect(() => {
+            pushMetricsForFolder({
+                coverageArtifactsPath: ".",
+                folderName: FOLDERNAME,
+                jobName: "test-jobname",
+                pushGatewayUri: "http://pushgateway",
+            })
+        }).toThrow(/Test error/)
+        expect(attemptsCount).toEqual(5)
+    })
 })

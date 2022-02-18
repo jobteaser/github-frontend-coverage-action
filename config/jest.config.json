@@ -1,0 +1,7 @@
+{
+    "verbose": true,
+    "bail": true,
+    "rootDir": "../",
+    "roots": ["<rootDir>/src"],
+    "silent": true
+}
