@@ -177,10 +177,10 @@ jobs:
     container: node:10.13-jessie
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.1.0
       # If using private repositories in your package.json file
       - name: "Setup SSH key for private repos"
-        uses: webfactory/ssh-agent@v0.5.0
+        uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.GH_USER_PRIVATE_SSH_KEY }}
       # If using private NPM packages in your package.json file
@@ -204,7 +204,7 @@ jobs:
 
       # This upload step allows to share coverage metrics between our 2 jobs
       - name: Upload coverage artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: coverage-artifacts
           path: coverage-artifacts.tar.gz
@@ -217,7 +217,7 @@ jobs:
     steps:
       # Download coverage metrics previously uploaded
       - name: Download coverage artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3.0.0
         with:
           name: coverage-artifacts
 
